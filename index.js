@@ -78,6 +78,11 @@ class CurrentSummationDelivered
     }
 }
 
+const ctors = {
+    InstantaneousDemand: InstantaneousDemand,
+    CurrentSummationDelivered, CurrentSummationDelivered
+};
+
 console.log("listening on", httpPort);
 http.createServer((req, res) => {
     let body = '';
@@ -91,20 +96,16 @@ http.createServer((req, res) => {
                 if ("rainforest" in result) {
                     const rainforest = result.rainforest;
                     if ("$" in rainforest) {
-                        if ("InstantaneousDemand" in rainforest) {
-                            for (let i = 0; i < rainforest.InstantaneousDemand.length; ++i) {
-                                const obj = new InstantaneousDemand(rainforest.$.macId, rainforest.InstantaneousDemand[i]);
-                                console.log("publishing to", path.join("/", mqttTopic, obj.subTopic()));
-                                mqttClient.publish(path.join("/", mqttTopic, obj.subTopic()), obj.toJSON());
+                        for (let k in rainforest) {
+                            if (k !== "$" && k in ctors) {
+                                const ctor = ctors[k];
+                                for (let i = 0; i < rainforest[k].length; ++i) {
+                                    const obj = new ctor(rainforest.$.macId, rainforest[k][i]);
+                                    const topic = path.join("/", mqttTopic, obj.subTopic());
+                                    console.log("publishing to", topic);
+                                    mqttClient.publish(topic, obj.toJSON());
+                                }
                             }
-                        } else if ("CurrentSummationDelivered" in rainforest) {
-                            for (let i = 0; i < rainforest.CurrentSummationDelivered.length; ++i) {
-                                const obj = new CurrentSummationDelivered(rainforest.$.macId, rainforest.CurrentSummationDelivered[i]);
-                                console.log("publishing to", path.join("/", mqttTopic, obj.subTopic()));
-                                mqttClient.publish(path.join("/", mqttTopic, obj.subTopic()), obj.toJSON());
-                            }
-                        } else {
-                            console.log("got xml", JSON.stringify(result, null, 4));
                         }
                     }
                 }
