@@ -46,7 +46,7 @@ class InstantaneousDemand
         this.demand = parseInt(data.Demand[0]) * multiplier / divisor;
         if (this.demand > 0x7FFFFFFF) {
             // silly rainforest and negative numbers
-            this.demand = this.demand - 0xFFFFFFFF;
+            this.demand -= 0xFFFFFFFF;
         }
     }
 
