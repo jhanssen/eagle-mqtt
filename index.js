@@ -43,11 +43,12 @@ class InstantaneousDemand
         const divisor = parseInt(data.Divisor[0]);
         const multiplier = parseInt(data.Multiplier[0]);
 
-        this.demand = parseInt(data.Demand[0]) * multiplier / divisor;
-        if (this.demand > 0x7FFFFFFF) {
+        let demand = parseInt(data.Demand[0]);
+        if (demand > 0x7FFFFFFF) {
             // silly rainforest and negative numbers
-            this.demand -= 0xFFFFFFFF;
+            demand -= 0xFFFFFFFF;
         }
+        this.demand = demand * multiplier / divisor;
     }
 
     subTopic() {
